@@ -1,0 +1,27 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Device {
+  id              String   @id @default(cuid())
+  submitterName   String
+  submitterEmail  String
+  deviceType      String
+  makeModel       String
+  serialNumber    String?
+  purchaseDate    String?
+  condition       String
+  location        String
+  locationDetail  String?
+  notes           String?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@index([submitterEmail])
+  @@index([deviceType])
+}
