@@ -1,5 +1,6 @@
 'use client';
 import { useMemo, useState } from 'react';
+import { useRouter } from 'next/navigation';
 
 type Row = {
   id: string;
@@ -26,6 +27,24 @@ export default function AdminTable({
 }) {
   const [filter, setFilter] = useState<string>('');
   const [search, setSearch] = useState<string>('');
+  const [deleting, setDeleting] = useState<string | null>(null);
+  const router = useRouter();
+
+  async function handleDelete(id: string) {
+    if (!window.confirm('Delete this device record? This cannot be undone.')) return;
+    setDeleting(id);
+    try {
+      const res = await fetch(`/api/submissions/${id}`, { method: 'DELETE' });
+      if (!res.ok) {
+        const body = await res.json().catch(() => ({}));
+        alert(`Delete failed: ${body.error ?? res.statusText}`);
+        return;
+      }
+      router.refresh();
+    } finally {
+      setDeleting(null);
+    }
+  }
 
   const filtered = useMemo(() => {
     return devices.filter((d) => {
@@ -147,6 +166,7 @@ export default function AdminTable({
                 <th>Location</th>
                 <th>Notes</th>
                 <th>Submitted</th>
+                <th></th>
               </tr>
             </thead>
             <tbody>
@@ -176,6 +196,15 @@ export default function AdminTable({
                   </td>
                   <td className="muted" style={{ fontSize: '0.78rem', whiteSpace: 'nowrap' }}>
                     {new Date(d.createdAt).toLocaleString()}
+                  </td>
+                  <td style={{ whiteSpace: 'nowrap' }}>
+                    <button
+                      className="btn btn-danger-ghost"
+                      onClick={() => handleDelete(d.id)}
+                      disabled={deleting === d.id}
+                    >
+                      {deleting === d.id ? '…' : 'Delete'}
+                    </button>
                   </td>
                 </tr>
               ))}
