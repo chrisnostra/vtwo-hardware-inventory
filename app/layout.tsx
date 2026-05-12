@@ -6,6 +6,12 @@ import './globals.css';
 export const metadata = {
   title: 'V.Two Hardware Inventory',
   description: 'Report V.Two-owned hardware in your possession',
+  icons: {
+    icon: [
+      { url: '/favicon.ico', media: '(prefers-color-scheme: light)' },
+      { url: '/favicon-dark.ico', media: '(prefers-color-scheme: dark)' },
+    ],
+  },
 };
 
 export const viewport: Viewport = {
